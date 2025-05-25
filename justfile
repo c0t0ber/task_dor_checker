@@ -25,3 +25,6 @@ update-deps:
 run-app:
     uv run python -m dor_checker
 
+run-dev:
+    uv run uvicorn dor_checker.main:app --host 0.0.0.0 --port 8000 --reload
+

@@ -204,22 +204,40 @@ Response:
 ### 5.2 Структура проекта
 ```
 dor-checker/
-├── main.py              # FastAPI приложение
-├── database.py          # Работа с SQLite
-├── models.py            # Pydantic модели
-├── ai_analyzer.py       # Логика проверки с AI
+├── dor_checker/         # Backend модуль
+│   ├── main.py          # FastAPI приложение
+│   ├── database.py      # Работа с SQLite
+│   ├── models.py        # Pydantic модели
+│   └── ai_analyzer.py   # Логика проверки с AI
+├── frontend/            # React фронтенд
+│   ├── src/
+│   │   ├── components/  # React компоненты
+│   │   ├── pages/       # Страницы приложения
+│   │   ├── hooks/       # Кастомные хуки
+│   │   ├── services/    # API сервисы
+│   │   └── types/       # TypeScript типы
+│   ├── package.json
+│   └── vite.config.ts
 ├── dor_checker.db       # SQLite база
-├── requirements.txt     # Зависимости
-└── frontend/
-    └── index.html       # Простой UI
+├── requirements.txt     # Python зависимости
+└── pyproject.toml       # Конфигурация проекта
 ```
 
-### 5.3 Frontend
-- Одностраничное приложение (SPA)
-- Vanilla JS или простой React
-- Формы для создания/редактирования DoR
-- Форма проверки задачи
+### 5.3 Frontend (React + TypeScript)
+- **Framework**: React 18 с TypeScript
+- **Сборщик**: Vite
+- **Стили**: TailwindCSS
+- **Маршрутизация**: React Router
+- **Формы**: React Hook Form
+- **HTTP клиент**: Axios
+- **Иконки**: Heroicons
+
+#### Функционал:
+- Управление DoR (создание, редактирование, удаление, просмотр)
+- Проверка задач с выбором DoR
 - Отображение результатов с цветовой индикацией
+- Адаптивный дизайн
+- Обработка ошибок и состояний загрузки
 
 ## 6. Дополнительные требования
 
@@ -244,7 +262,40 @@ MAX_TASK_LENGTH = 5000
 DATABASE_PATH = "dor_checker.db"
 ```
 
-## 7. Примеры промптов для AI
+## 7. Запуск приложения
+
+### 7.1 Backend
+```bash
+# Установка зависимостей
+uv sync
+
+# Запуск сервера
+uv run python -m dor_checker
+
+# Или через uvicorn
+uv run uvicorn dor_checker.main:app --reload --port 8000
+```
+
+### 7.2 Frontend
+```bash
+# Переход в директорию фронтенда
+cd frontend
+
+# Установка зависимостей
+npm install
+
+# Запуск dev сервера
+npm run dev
+```
+
+### 7.3 Полный запуск
+1. Запустите backend на порту 8000
+2. Запустите frontend на порту 3000
+3. Откройте http://localhost:3000 в браузере
+
+Vite автоматически проксирует API запросы с `/api/*` на backend сервер.
+
+## 8. Примеры промптов для AI
 
 ```python
 def create_check_prompt(criterion: str, task_text: str) -> str:
