@@ -1,6 +1,6 @@
 import logging
-from you_app_srcs import __name__ as app_name, __version__ as app_version
-from you_app_srcs.app import MyClass
+from dor_checker import __name__ as app_name, __version__ as app_version
+from dor_checker.app import MyClass
 
 import dotenv
 

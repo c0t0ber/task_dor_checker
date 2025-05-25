@@ -7,15 +7,15 @@ init-venv:
     uv venv -p 3.12
 
 fmt:
-    uv run ruff check --fix-only you_app_srcs
-    uv run isort you_app_srcs
-    uv run ruff format you_app_srcs
+    uv run ruff check --fix-only dor_checker
+    uv run isort dor_checker
+    uv run ruff format dor_checker
 
 lint:
-    uv run isort --check you_app_srcs
-    uv run ruff format --check you_app_srcs
-    uv run ruff check you_app_srcs
-    uv run mypy you_app_srcs
+    uv run isort --check dor_checker
+    uv run ruff format --check dor_checker
+    uv run ruff check dor_checker
+    uv run mypy dor_checker
 
 update-deps:
     uv pip compile --no-header --upgrade pyproject.toml -o requirements.txt
@@ -23,5 +23,5 @@ update-deps:
    
 
 run-app:
-    uv run python -m you_app_srcs
+    uv run python -m dor_checker
 

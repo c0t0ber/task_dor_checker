@@ -1,5 +1,5 @@
 [project]
-name = "YOU-APP-NAME-HERE"
+name = "dor_checker"
 dynamic = ["version"]
 description = "Add your description here"
 requires-python = "~=3.12"

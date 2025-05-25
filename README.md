@@ -1,78 +1,265 @@
-# Python Project Template for Cursor
+# Техническое задание: DoR Checker
 
-Welcome to this Python project template adapted for use with the Cursor editor. This template provides a structured starting point for your Python applications with modern tooling and best practices built in.
+## 1. Описание проекта
 
-## 🚀 Getting Started
+Веб-приложение для проверки текста задач на соответствие критериям Definition of Ready (DoR).
 
-### Prerequisites
+## 2. Основной функционал
 
-This template requires:
+### 2.1 Управление DoR-шаблонами
+- Создание новых DoR с набором критериев
+- Редактирование существующих DoR
+- Удаление DoR
+- Сохранение в SQLite базе данных
+- Просмотр списка всех DoR
 
-- [UV](https://github.com/astral-sh/uv) for dependency management
-- [just](https://github.com/casey/just) command runner
-- https://marketplace.visualstudio.com/items?itemName=ms-python.python
+### 2.2 Проверка задачи
+- Форма для вставки текста задачи
+- Выбор DoR из списка сохраненных
+- AI анализирует текст и проверяет каждый критерий
+- Вывод результатов: выполнен/не выполнен + комментарий
 
-### Quick Setup
+## 3. Архитектура
 
-1. Clone this repository
-2. Run the setup script to customize the template for your project:
-   ```bash
-   ./project_setup.py "Your Project Name"
-   ```
-   This script will:
-   - Rename the `you_app_srcs` directory to your project name (in snake_case)
-   - Update project name in `pyproject.toml`
-   - Update package references in all necessary files
-   - Update module name in `__init__.py`
-
-3. Install dependencies:
-   ```bash
-   just init-venv
-   just update-deps
-   ```
-4. Start developing!
-
-## 📁 Template Structure
-
+### 3.1 Backend (Python)
 ```
-.
-├── pyproject.toml         # Project configuration and dependencies
-├── justfile               # Command runner tasks
-├── project_setup.py       # Project customization script
-├── you_app_srcs/          # Main source directory (will be renamed by setup script)
-│   ├── __init__.py        # Package initialization
-│   └── ...                # Your modules go here
-└── CHANGELOG.md           # Documentation of changes
+# DoR управление
+POST   /api/dor/create     - создание нового DoR
+GET    /api/dor/list       - список всех DoR
+GET    /api/dor/{id}       - получить конкретный DoR
+PUT    /api/dor/{id}       - обновить DoR
+DELETE /api/dor/{id}       - удалить DoR
+
+# Проверка
+POST   /api/check          - проверка задачи на соответствие DoR
 ```
 
-## 🛠️ Development Commands
+### 3.2 База данных (SQLite)
+```sql
+-- Инициализация базы данных
+CREATE TABLE IF NOT EXISTS dor_templates (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-This template uses `just` for command running:
+CREATE TABLE IF NOT EXISTS dor_criteria (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    dor_id INTEGER NOT NULL,
+    criterion TEXT NOT NULL,
+    order_index INTEGER DEFAULT 0,
+    FOREIGN KEY (dor_id) REFERENCES dor_templates(id) ON DELETE CASCADE
+);
 
-- `just fmt` - Format code
-- `just lint` - Lint code
-- `just update-deps` - Update dependencies
-
-## 🔄 Customization
-
-The template includes a customization script for easy project setup:
-
-```bash
-# Example: Set up a project called "Weather Service"
-./project_setup.py "Weather Service"
+-- Индекс для быстрой выборки критериев
+CREATE INDEX idx_dor_criteria ON dor_criteria(dor_id);
 ```
 
-This will:
-- Rename the package directory to `weather_service`
-- Update project name to "WEATHER-SERVICE" in pyproject.toml
-- Update all internal references to use the new package name
+## 4. API Endpoints детально
 
-## 📝 Development Guidelines
+### 4.1 POST /api/dor/create
+Request:
+```json
+{
+  "name": "Backend Task DoR",
+  "description": "Стандартный DoR для backend задач",
+  "criteria": [
+    "Задача содержит четкое описание проблемы или функционала",
+    "Указаны acceptance criteria (критерии приемки)",
+    "Есть оценка времени выполнения",
+    "Описаны API endpoints (если применимо)",
+    "Указаны зависимости от других задач или сервисов"
+  ]
+}
+```
 
-This template encourages:
+Response:
+```json
+{
+  "id": 1,
+  "message": "DoR успешно создан"
+}
+```
 
-- Composition over inheritance
-- Type hints for everything (checked by mypy)
-- Comprehensive documentation
-- Proper logging practices
-- Modern Python features
+### 4.2 GET /api/dor/list
+Response:
+```json
+[
+  {
+    "id": 1,
+    "name": "Backend Task DoR",
+    "description": "Стандартный DoR для backend задач",
+    "criteria_count": 5,
+    "created_at": "2024-01-15T10:30:00"
+  },
+  {
+    "id": 2,
+    "name": "Bug Fix DoR",
+    "description": "DoR для багов",
+    "criteria_count": 4,
+    "created_at": "2024-01-15T11:00:00"
+  }
+]
+```
+
+### 4.3 GET /api/dor/{id}
+Response:
+```json
+{
+  "id": 1,
+  "name": "Backend Task DoR",
+  "description": "Стандартный DoR для backend задач",
+  "criteria": [
+    {
+      "id": 1,
+      "criterion": "Задача содержит четкое описание проблемы или функционала",
+      "order_index": 0
+    },
+    {
+      "id": 2,
+      "criterion": "Указаны acceptance criteria (критерии приемки)",
+      "order_index": 1
+    }
+  ]
+}
+```
+
+### 4.4 PUT /api/dor/{id}
+Request:
+```json
+{
+  "name": "Updated Backend DoR",
+  "description": "Обновленное описание",
+  "criteria": [
+    "Новый критерий 1",
+    "Новый критерий 2"
+  ]
+}
+```
+
+### 4.5 DELETE /api/dor/{id}
+Response:
+```json
+{
+  "message": "DoR успешно удален"
+}
+```
+
+### 4.6 POST /api/check
+Request:
+```json
+{
+  "dor_id": 1,
+  "task_text": "Необходимо создать API endpoint для генерации отчетов. Endpoint должен принимать параметры даты начала и конца периода."
+}
+```
+
+Response:
+```json
+{
+  "dor_name": "Backend Task DoR",
+  "total_criteria": 5,
+  "passed_criteria": 2,
+  "pass_rate": 40,
+  "results": [
+    {
+      "criterion": "Задача содержит четкое описание проблемы или функционала",
+      "passed": true,
+      "comment": "Описание присутствует, указана цель создания endpoint"
+    },
+    {
+      "criterion": "Указаны acceptance criteria (критерии приемки)",
+      "passed": false,
+      "comment": "Добавьте критерии приемки: что должен возвращать endpoint, формат данных, обработка ошибок"
+    },
+    {
+      "criterion": "Есть оценка времени выполнения",
+      "passed": false,
+      "comment": "Укажите примерную оценку в часах или днях"
+    },
+    {
+      "criterion": "Описаны API endpoints (если применимо)",
+      "passed": true,
+      "comment": "Базовое описание endpoint присутствует"
+    },
+    {
+      "criterion": "Указаны зависимости от других задач или сервисов",
+      "passed": false,
+      "comment": "Укажите, от каких сервисов или баз данных зависит этот endpoint"
+    }
+  ]
+}
+```
+
+## 5. Требования к реализации
+
+### 5.1 Backend (Python)
+- **Framework**: FastAPI
+- **База данных**: SQLite (файл `dor_checker.db`)
+- **AI**: OpenAI API для анализа текста
+- **Валидация**: Pydantic модели
+
+### 5.2 Структура проекта
+```
+dor-checker/
+├── main.py              # FastAPI приложение
+├── database.py          # Работа с SQLite
+├── models.py            # Pydantic модели
+├── ai_analyzer.py       # Логика проверки с AI
+├── dor_checker.db       # SQLite база
+├── requirements.txt     # Зависимости
+└── frontend/
+    └── index.html       # Простой UI
+```
+
+### 5.3 Frontend
+- Одностраничное приложение (SPA)
+- Vanilla JS или простой React
+- Формы для создания/редактирования DoR
+- Форма проверки задачи
+- Отображение результатов с цветовой индикацией
+
+## 6. Дополнительные требования
+
+### 6.1 Обработка ошибок
+- Валидация входных данных
+- Корректная обработка отсутствующих DoR
+- Лимиты на длину текста задачи (макс 5000 символов)
+- Обработка ошибок AI API
+
+### 6.2 Начальные данные
+При первом запуске создать несколько стандартных DoR:
+- General Task DoR
+- Backend Task DoR  
+- Frontend Task DoR
+- Bug Fix DoR
+
+### 6.3 Конфигурация
+```python
+# config.py
+OPENAI_API_KEY = "..."
+MAX_TASK_LENGTH = 5000
+DATABASE_PATH = "dor_checker.db"
+```
+
+## 7. Примеры промптов для AI
+
+```python
+def create_check_prompt(criterion: str, task_text: str) -> str:
+    return f"""
+    Проверь, выполняется ли следующий критерий DoR в тексте задачи.
+    
+    Критерий: {criterion}
+    
+    Текст задачи:
+    {task_text}
+    
+    Ответь в формате JSON:
+    {{
+        "passed": true/false,
+        "comment": "Короткий комментарий что добавить или почему критерий выполнен"
+    }}
+    """
+```
