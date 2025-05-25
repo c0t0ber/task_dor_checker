@@ -11,6 +11,11 @@ dependencies = [
     "black",
     "isort",
     "python-dotenv",
+    "fastapi",
+    "uvicorn[standard]",
+    "openai",
+    "pydantic",
+    "aiosqlite",
 ]
 
 
@@ -28,10 +33,9 @@ profile = "black"
 line-length = 120
 
 [tool.mypy]
-# Unncoment this if you want to use pydantic
-#plugins = [
-#    "pydantic.mypy",
-#]
+plugins = [
+    "pydantic.mypy",
+]
 
 strict = "true"
 
