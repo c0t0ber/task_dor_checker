@@ -1,0 +1,11 @@
+package.json
+eslint.config.mjs
+tsconfig.json
+.prettierrc.json
+.stylelintrc.json
+**/*.md
+CHANGELOG.md
+**/*.yml
+**/*.json
+.gitlab/**/*
+**/*.html

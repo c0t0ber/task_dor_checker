@@ -1,0 +1,41 @@
+install:
+    npm install
+
+update-deps:
+    npm update
+
+dev:
+    npm run dev
+
+lint:
+    npm run lint:js
+
+# Fix linting issues
+lint-fix:
+    npm run lint:js:fix .
+
+# Run prettier check
+format-check:
+    npm run prettier
+
+# Fix formatting issues
+fmt:
+    npm run prettier:fix
+
+# Run style linting
+lint-style:
+    npm run lint:style
+
+# Fix style linting issues
+lint-style-fix:
+    npm run lint:style:fix
+
+# Run all linting checks
+lint-all: lint lint-style format-check
+
+# Fix all linting and formatting issues
+fix-all: lint-fix lint-style-fix fmt
+
+# Run type checking
+type-check:
+    npm run type:check

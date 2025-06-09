@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "stylelint-config-recommended",
+    "stylelint-config-recommended-vue"
+  ],
+  "rules": {
+    "block-closing-brace-newline-after": null,
+    "at-rule-empty-line-before": null
+  }
+}
