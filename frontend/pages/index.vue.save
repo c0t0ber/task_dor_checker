@@ -1,0 +1,110 @@
+OAO<template>
+  <div class="task-checker-page">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-gray-900">Проверка задачи на соответствие DoR</h1>
+      <p class="mt-2 text-gray-600">
+        Загрузите текст задачи и выберите чек-лист для автоматической проверки соответствия критериям Definition of Ready
+      </p>
+    </div>
+
+    <form @submit.prevent="handleSubmit" class="space-y-6">
+      <div class="bg-white shadow rounded-lg p-6">
+        <TaskInput 
+          v-model="taskText" 
+          :max-length="10000"
+        />
+      </div>
+
+      <div class="bg-white shadow rounded-lg p-6">
+        <MetaInfoInput 
+          v-model="metaInfo" 
+          :max-length="5000"
+        />
+      </div>
+
+      <div class="bg-white shadow rounded-lg p-6">
+        <ChecklistSelector 
+          v-model="selectedChecklistId"
+          :checklists="checklistsStore.checklists"
+          :is-loading="checklistsStore.isLoading"
+        />
+      </div>
+
+      <div class="flex justify-center">
+        <button
+          type="submit"
+          :disabled="!canSubmit || taskChecker.isChecking"
+          class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white transition-colors"
+          :class="canSubmit && !taskChecker.isChecking ? 
+            'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500' : 
+            'bg-gray-400 cursor-not-allowed'"
+        >
+          <div v-if="taskChecker.isChecking" class="flex items-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Выполняется проверка...
+          </div>
+          <span v-else>Проверить задачу</span>
+        </button>
+      </div>
+    </form>
+
+    <div v-if="taskChecker.results" class="mt-8">
+      <CheckResults 
+        :results="taskChecker.results" 
+        @copy-results="taskChecker.copyResults"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup>
+const taskChecker = useTaskChecker()
+const checklistsStore = useChecklistsStore()
+
+// Реактивные данные формы
+const taskText = ref('')
+const metaInfo = ref('')
+const selectedChecklistId = ref('')
+
+// Вычисляемое свойство для проверки возможности отправки
+const canSubmit = computed(() => {
+  return taskText.value.trim().length > 0 && 
+         taskText.value.length <= 10000 &&
+         selectedChecklistId.value.length > 0 &&
+         metaInfo.value.length <= 5000
+})
+
+// Загрузка чек-листов при монтировании компонента
+onMounted(async () => {
+  try {
+    await checklistsStore.fetchChecklists()
+  } catch (error) {
+    console.error('Ошибка при загрузке чек-листов:', error)
+  }
+})
+
+// Обработчик отправки формы
+const handleSubmit = async () => {
+  if (!canSubmit.value) return
+  
+  await taskChecker.checkTask(
+    taskText.value,
+    metaInfo.value,
+    selectedChecklistId.value
+  )
+}
+
+// SEO мета-данные
+useHead({
+  title: 'DoR Checker - Проверка задач',
+  meta: [
+    {
+      name: 'description',
+      content: 'Инструмент для автоматической проверки задач на соответствие критериям Definition of Ready (DoR)'
+    }
+  ]
+})
+</script>

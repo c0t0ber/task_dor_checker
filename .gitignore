@@ -32,3 +32,5 @@ venv
 
 
 uv.lock
+
+*.egg-info
