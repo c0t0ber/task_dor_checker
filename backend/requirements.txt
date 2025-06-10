@@ -1,0 +1,97 @@
+annotated-types==0.7.0
+    # via pydantic
+anyio==4.9.0
+    # via
+    #   httpx
+    #   openai
+    #   starlette
+    #   watchfiles
+black==25.1.0
+    # via dor-checker (pyproject.toml)
+certifi==2025.4.26
+    # via
+    #   httpcore
+    #   httpx
+click==8.2.1
+    # via
+    #   black
+    #   uvicorn
+distro==1.9.0
+    # via openai
+fastapi==0.115.12
+    # via dor-checker (pyproject.toml)
+h11==0.16.0
+    # via
+    #   httpcore
+    #   uvicorn
+httpcore==1.0.9
+    # via httpx
+httptools==0.6.4
+    # via uvicorn
+httpx==0.28.1
+    # via openai
+idna==3.10
+    # via
+    #   anyio
+    #   httpx
+isort==6.0.1
+    # via dor-checker (pyproject.toml)
+jiter==0.10.0
+    # via openai
+mypy==1.16.0
+    # via dor-checker (pyproject.toml)
+mypy-extensions==1.1.0
+    # via
+    #   black
+    #   mypy
+openai==1.85.0
+    # via dor-checker (pyproject.toml)
+packaging==25.0
+    # via black
+pathspec==0.12.1
+    # via
+    #   black
+    #   mypy
+platformdirs==4.3.8
+    # via black
+pydantic==2.11.5
+    # via
+    #   dor-checker (pyproject.toml)
+    #   fastapi
+    #   openai
+pydantic-core==2.33.2
+    # via pydantic
+python-dotenv==1.1.0
+    # via
+    #   dor-checker (pyproject.toml)
+    #   uvicorn
+pyyaml==6.0.2
+    # via uvicorn
+ruff==0.11.13
+    # via dor-checker (pyproject.toml)
+sniffio==1.3.1
+    # via
+    #   anyio
+    #   openai
+starlette==0.46.2
+    # via fastapi
+tqdm==4.67.1
+    # via openai
+typing-extensions==4.14.0
+    # via
+    #   fastapi
+    #   mypy
+    #   openai
+    #   pydantic
+    #   pydantic-core
+    #   typing-inspection
+typing-inspection==0.4.1
+    # via pydantic
+uvicorn==0.34.3
+    # via dor-checker (pyproject.toml)
+uvloop==0.21.0
+    # via uvicorn
+watchfiles==1.0.5
+    # via uvicorn
+websockets==15.0.1
+    # via uvicorn
